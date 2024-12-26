@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Aplikasi pemantauan efisiensi energi </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #4f1515;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #117b77;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #14e141;
+        }
+        .result, .history {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .history {
+            margin-top: 30px;
+        }
+        ul {
+            padding: 0;
+            list-style-type: none;
+        }
+        li {
+            background-color: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>EcoMeter</h1>
+    <div class="container">
+        <form id="energyForm">
+            <label for="energyInput">Konsumsi Energi (Joule):</label>
+            <input type="number" id="energyInput" placeholder="Masukkan energi (J)" required>
+
+            <label for="workOutput">Output Kerja (Joule):</label>
+            <input type="number" id="workOutput" placeholder="Masukkan kerja (J)" required>
+
+            <button type="button" onclick="calculateEfficiency()">Hitung Efisiensi</button>
+        </form>
+        <div id="result" class="result" style="display: none;">
+            <!-- Hasil akan ditampilkan di sini -->
+        </div>
+    </div>
+    <div class="history">
+        <h3>Histori Perhitungan:</h3>
+        <ul id="historyList">
+            <!-- Histori akan ditambahkan di sini -->
+        </ul>
+    </div>
+
+    <script>
+        function calculateEfficiency() {
+            const energyInput = parseFloat(document.getElementById('energyInput').value);
+            const workOutput = parseFloat(document.getElementById('workOutput').value);
+            const resultDiv = document.getElementById('result');
+            const historyList = document.getElementById('historyList');
+
+            if (energyInput > 0 && workOutput >= 0) {
+                const efficiency = (workOutput / energyInput) * 100;
+
+                // Penjelasan rinci
+                let explanation = `
+                    Konsumsi Energi adalah ${energyInput} Joule, yang menunjukkan total energi yang digunakan.<br>
+                    Output Kerja adalah ${workOutput} Joule, yang merupakan jumlah energi yang berhasil digunakan untuk menghasilkan kerja.<br>
+                    Rumus efisiensi adalah: (Output Kerja ÷ Konsumsi Energi) × 100.<br>
+                    Maka, (${workOutput} ÷ ${energyInput}) × 100 = ${efficiency.toFixed(2)}%.<br>
+                `;
+
+                if (efficiency > 100) {
+                    explanation += `
+                        <strong>Catatan:</strong> Hasil efisiensi di atas 100% menunjukkan bahwa ada kesalahan pada input data.<br>
+                        Hal ini tidak realistis karena efisiensi biasanya tidak dapat melebihi 100%. Silakan periksa data Anda.
+                    `;
+                } else if (efficiency === 100) {
+                    explanation += `
+                        <strong>Catatan:</strong> Efisiensi 100% berarti seluruh energi yang dikonsumsi berhasil diubah menjadi kerja tanpa ada yang terbuang.
+                    `;
+                } else if (efficiency < 100 && efficiency > 0) {
+                    explanation += `
+                        <strong>Catatan:</strong> Efisiensi kurang dari 100% menunjukkan bahwa sebagian energi hilang dalam bentuk panas atau bentuk energi lain yang tidak dapat dimanfaatkan.
+                    `;
+                } else {
+                    explanation += `
+                        <strong>Catatan:</strong> Jika output kerja bernilai 0, berarti tidak ada energi yang berhasil dimanfaatkan.
+                    `;
+                }
+
+                // Tampilkan hasil dan penjelasan
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <strong>Efisiensi Energi:</strong> ${efficiency.toFixed(2)}%<br>
+                    ${explanation}
+                `;
+
+                // Tambahkan histori perhitungan
+                const historyItem = document.createElement('li');
+                historyItem.innerHTML = `
+                    Konsumsi Energi: ${energyInput} J, Output Kerja: ${workOutput} J<br>
+                    Efisiensi: ${efficiency.toFixed(2)}%<br>
+                    <small>${explanation}</small>
+                `;
+                historyList.appendChild(historyItem);
+
+                // Reset input
+                document.getElementById('energyForm').reset();
+            } else {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <strong>Masukkan nilai yang valid!</strong>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
